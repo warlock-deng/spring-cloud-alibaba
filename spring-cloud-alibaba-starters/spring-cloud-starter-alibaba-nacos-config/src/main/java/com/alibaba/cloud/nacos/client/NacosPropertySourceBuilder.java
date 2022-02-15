@@ -65,12 +65,13 @@ public class NacosPropertySourceBuilder {
 	}
 
 	/**
+	 * @param namespace namespace
 	 * @param dataId Nacos dataId
 	 * @param group Nacos group
 	 */
-	NacosPropertySource build(String dataId, String group, String fileExtension,
-			boolean isRefreshable) {
-		List<PropertySource<?>> propertySources = loadNacosData(dataId, group,
+	NacosPropertySource build(String namespace, String dataId, String group,
+			String fileExtension, boolean isRefreshable) {
+		List<PropertySource<?>> propertySources = loadNacosData(namespace, dataId, group,
 				fileExtension);
 		NacosPropertySource nacosPropertySource = new NacosPropertySource(propertySources,
 				group, dataId, new Date(), isRefreshable);
@@ -78,11 +79,11 @@ public class NacosPropertySourceBuilder {
 		return nacosPropertySource;
 	}
 
-	private List<PropertySource<?>> loadNacosData(String dataId, String group,
-			String fileExtension) {
+	private List<PropertySource<?>> loadNacosData(String namespace, String dataId,
+			String group, String fileExtension) {
 		String data = null;
 		try {
-			data = configService.getConfig(dataId, group, timeout);
+			data = configService.getConfig(namespace, dataId, group, timeout);
 			if (StringUtils.isEmpty(data)) {
 				log.warn(
 						"Ignore the empty nacos configuration and get it based on dataId[{}] & group[{}]",

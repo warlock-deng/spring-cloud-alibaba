@@ -344,16 +344,18 @@
             </build>
 
             <distributionManagement>
-                <snapshotRepository>
-                    <id>sonatype-nexus-snapshots</id>
-                    <name>Sonatype Nexus Snapshots</name>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
                 <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <name>Nexus Release Repository</name>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <!-- 该id 需要和 settings.xml 中配置的 <server> 标签下的 <id> 标签一致，否则，上传jar 的时候出现 Not authorized 错误-->
+                    <id>sense_nexus_release</id>
+                    <name>release</name>
+                    <url>http://nexus.sensedeal.wiki:6081/repository/maven-releases/</url>
                 </repository>
+
+                <snapshotRepository>
+                    <id>sense_nexus_snapshots</id>
+                    <name>snapshots</name>
+                    <url>http://nexus.sensedeal.wiki:6081/repository/maven-snapshots/</url>
+                </snapshotRepository>
             </distributionManagement>
         </profile>
 

@@ -113,7 +113,8 @@ public class NacosPropertySourceLocator implements PropertySourceLocator {
 				.getSharedConfigs();
 		if (!CollectionUtils.isEmpty(sharedConfigs)) {
 			checkConfiguration(sharedConfigs, "shared-configs");
-			loadNacosConfiguration(compositePropertySource, sharedConfigs);
+			loadNacosConfiguration(nacosConfigProperties.getSharedNamespace(),
+					compositePropertySource, sharedConfigs);
 		}
 	}
 
@@ -125,7 +126,8 @@ public class NacosPropertySourceLocator implements PropertySourceLocator {
 				.getExtensionConfigs();
 		if (!CollectionUtils.isEmpty(extConfigs)) {
 			checkConfiguration(extConfigs, "extension-configs");
-			loadNacosConfiguration(compositePropertySource, extConfigs);
+			loadNacosConfiguration(nacosConfigProperties.getExtensionNamespace(),
+					compositePropertySource, extConfigs);
 		}
 	}
 
@@ -138,25 +140,26 @@ public class NacosPropertySourceLocator implements PropertySourceLocator {
 		String fileExtension = properties.getFileExtension();
 		String nacosGroup = properties.getGroup();
 		// load directly once by default
-		loadNacosDataIfPresent(compositePropertySource, dataIdPrefix, nacosGroup,
-				fileExtension, true);
+		loadNacosDataIfPresent(compositePropertySource, properties.getNamespace(),
+				dataIdPrefix, nacosGroup, fileExtension, true);
 		// load with suffix, which have a higher priority than the default
-		loadNacosDataIfPresent(compositePropertySource,
+		loadNacosDataIfPresent(compositePropertySource, properties.getNamespace(),
 				dataIdPrefix + DOT + fileExtension, nacosGroup, fileExtension, true);
 		// Loaded with profile, which have a higher priority than the suffix
 		for (String profile : environment.getActiveProfiles()) {
 			String dataId = dataIdPrefix + SEP1 + profile + DOT + fileExtension;
-			loadNacosDataIfPresent(compositePropertySource, dataId, nacosGroup,
-					fileExtension, true);
+			loadNacosDataIfPresent(compositePropertySource, properties.getNamespace(),
+					dataId, nacosGroup, fileExtension, true);
 		}
 
 	}
 
-	private void loadNacosConfiguration(final CompositePropertySource composite,
+	private void loadNacosConfiguration(final String namespace,
+			final CompositePropertySource composite,
 			List<NacosConfigProperties.Config> configs) {
 		for (NacosConfigProperties.Config config : configs) {
-			loadNacosDataIfPresent(composite, config.getDataId(), config.getGroup(),
-					NacosDataParserHandler.getInstance()
+			loadNacosDataIfPresent(composite, namespace, config.getDataId(),
+					config.getGroup(), NacosDataParserHandler.getInstance()
 							.getFileExtension(config.getDataId()),
 					config.isRefresh());
 		}
@@ -175,28 +178,29 @@ public class NacosPropertySourceLocator implements PropertySourceLocator {
 	}
 
 	private void loadNacosDataIfPresent(final CompositePropertySource composite,
-			final String dataId, final String group, String fileExtension,
-			boolean isRefreshable) {
+			final String namespace, final String dataId, final String group,
+			String fileExtension, boolean isRefreshable) {
 		if (null == dataId || dataId.trim().length() < 1) {
 			return;
 		}
 		if (null == group || group.trim().length() < 1) {
 			return;
 		}
-		NacosPropertySource propertySource = this.loadNacosPropertySource(dataId, group,
-				fileExtension, isRefreshable);
+		NacosPropertySource propertySource = this.loadNacosPropertySource(namespace,
+				dataId, group, fileExtension, isRefreshable);
 		this.addFirstPropertySource(composite, propertySource, false);
 	}
 
-	private NacosPropertySource loadNacosPropertySource(final String dataId,
-			final String group, String fileExtension, boolean isRefreshable) {
+	private NacosPropertySource loadNacosPropertySource(final String namespace,
+			final String dataId, final String group, String fileExtension,
+			boolean isRefreshable) {
 		if (NacosContextRefresher.getRefreshCount() != 0) {
 			if (!isRefreshable) {
 				return NacosPropertySourceRepository.getNacosPropertySource(dataId,
 						group);
 			}
 		}
-		return nacosPropertySourceBuilder.build(dataId, group, fileExtension,
+		return nacosPropertySourceBuilder.build(namespace, dataId, group, fileExtension,
 				isRefreshable);
 	}
 

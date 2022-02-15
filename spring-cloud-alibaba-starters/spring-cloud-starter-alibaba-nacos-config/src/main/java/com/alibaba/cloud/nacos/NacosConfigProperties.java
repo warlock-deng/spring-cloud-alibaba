@@ -217,11 +217,17 @@ public class NacosConfigProperties {
 	 */
 	private String name;
 
+	/** 公共配置的namespace. */
+	private String sharedNamespace;
+
 	/**
 	 * a set of shared configurations .e.g:
 	 * spring.cloud.nacos.config.shared-configs[0]=xxx .
 	 */
 	private List<Config> sharedConfigs;
+
+	/** 扩展配置的namespace. */
+	private String extensionNamespace;
 
 	/**
 	 * a set of extensional configurations .e.g:
@@ -235,6 +241,22 @@ public class NacosConfigProperties {
 	private boolean refreshEnabled = true;
 
 	// todo sts support
+
+	public String getSharedNamespace() {
+		return sharedNamespace;
+	}
+
+	public void setSharedNamespace(String sharedNamespace) {
+		this.sharedNamespace = sharedNamespace;
+	}
+
+	public String getExtensionNamespace() {
+		return extensionNamespace;
+	}
+
+	public void setExtensionNamespace(String extensionNamespace) {
+		this.extensionNamespace = extensionNamespace;
+	}
 
 	public String getServerAddr() {
 		return serverAddr;
